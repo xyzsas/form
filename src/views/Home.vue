@@ -57,8 +57,7 @@ export default {
   }),
   methods: {
     submit () {
-      this.$refs.form.validate()
-      console.log(this.inputData)
+      if (!this.$refs.form.validate()) return
     }
   }
 }
