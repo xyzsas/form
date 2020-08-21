@@ -155,14 +155,5 @@ export default [
         return pattern.test(value) || '请填写正确电话号码'
       }
     ]
-  },
-  {
-    name: 'text',
-    field: 'select',
-    placeholder: '母亲联系电话',
-    items: ['1', '2'],
-    rules: [
-      value => !!value || '请填写电话号码'
-    ]
   }
 ]
