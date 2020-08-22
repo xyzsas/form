@@ -10,7 +10,7 @@ export default [
     placeholder: '姓名',
     rules: [
       value => !!value || '请填写姓名',
-      value => (value >= 0 && value <= 6) || '请填正确写姓名'
+      value => (value.length >= 0 && value.length <= 6) || '请填正确写姓名'
     ]
   },
   {
@@ -79,7 +79,7 @@ export default [
     placeholder: '父亲姓名',
     rules: [
       value => !!value || '请填写父亲姓名',
-      value => (value >= 0 && value <= 6) || '请填正确写父亲姓名'
+      value => (value.length >= 0 && value.length <= 6) || '请填正确写父亲姓名'
     ]
   },
   {
@@ -121,7 +121,7 @@ export default [
     placeholder: '母亲姓名',
     rules: [
       value => !!value || '请填写母亲姓名',
-      value => (value >= 0 && value <= 6) || '请填正确写母亲姓名'
+      value => (value.length >= 0 && value.length <= 6) || '请填正确写母亲姓名'
     ]
   },
   {

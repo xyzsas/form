@@ -47,6 +47,7 @@
 
 <script>
 import formData from '../data/stuReg'
+import swal from 'sweetalert'
 
 export default {
   name: 'Home',
@@ -58,6 +59,7 @@ export default {
   methods: {
     submit () {
       if (!this.$refs.form.validate()) return
+      swal('提交成功！', '感谢您的参与！')
     }
   }
 }
