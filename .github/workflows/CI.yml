@@ -2,7 +2,7 @@
 
 name: CI
 
-# Controls when the action will run. Triggers the workflow on push or pull request
+# Controls when the action will run. Triggers the workflow on push
 # events but only for the master branch
 on:
   push:
@@ -35,5 +35,7 @@ jobs:
         endpoint: oss-cn-shanghai.aliyuncs.com
         access-key-id: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
         access-key-secret: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
+    - name: Delete old files
+      run: ossutil rm -rf oss://xyzsas/form/
     - name: Upload files to OSS
       run: ossutil cp -rf ./form oss://xyzsas/form/
