@@ -10,8 +10,20 @@
           <v-select v-if="f.select" outlined dense v-model="input[f.select]" :items="f.items" :label="f.select" :rules="[rule(f, f.select)]"></v-select>
         </div>
       </v-card>
-      <v-btn v-if="form" color="primary" large @click="submit" :loading="loading">提交</v-btn>
+      <v-btn v-if="form" color="primary" fab large @click="submit" :loading="loading">
+        <v-icon>mdi-check</v-icon>
+      </v-btn>
     </v-form>
+    <v-dialog v-model="dialog" max-width="290">
+      <v-card>
+        <v-card-title>学生事务系统</v-card-title>
+        <v-card-text>{{ message }}</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text @click="back">确定</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -24,6 +36,9 @@ export default {
   name: 'Home',
   data: () => ({
     loading: false,
+    success: false,
+    dialog: false,
+    message: '',
     name: SS.name,
     form: null,
     title: '新生信息采集',
@@ -33,9 +48,12 @@ export default {
     if (!SS.token) {
       window.location.href = '/user/#/?c=/form/'
       this.title = '请先登录'
-    } else {
-      this.render(form)
+      return
     }
+    this.render(form)
+    this.$ajax.get('/form/form?id=test&record=1', { headers: { token: SS.token } })
+      .then(resp => { this.input = resp.data })
+      .catch(console.log)
   },
   methods: {
     render (form) {
@@ -54,6 +72,22 @@ export default {
       if (!this.$refs.form.validate()) return
       this.loading = true
       // here
+      const res = await this.$ajax
+        .post('/form/form?id=test', this.input, {
+          headers: { token: SS.token }
+        })
+        .then(resp => {
+          this.success = true
+          return resp.data
+        })
+        .catch(err => err.response.data)
+      this.loading = false
+      this.dialog = true
+      this.message = res
+    },
+    back () {
+      this.dialog = false
+      if (this.success) window.location.href = '/index.html'
     }
   }
 }
