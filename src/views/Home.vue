@@ -51,7 +51,7 @@ export default {
       return
     }
     this.render(form)
-    this.$ajax.get('/form/form?id=test&record=1', { headers: { token: SS.token } })
+    this.$ajax.get('/form?id=test&record=1', { headers: { token: SS.token } })
       .then(resp => { this.input = resp.data })
       .catch(console.log)
   },
@@ -73,7 +73,7 @@ export default {
       this.loading = true
       // here
       const res = await this.$ajax
-        .post('/form/form?id=test', this.input, {
+        .post('/form?id=test', this.input, {
           headers: { token: SS.token }
         })
         .then(resp => {
