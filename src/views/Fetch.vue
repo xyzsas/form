@@ -17,13 +17,26 @@ export default {
       main: [
         {
           title: '测试问卷 - 首页',
-          queue: {
-            4: {
-              A: 'awa'
+          queue: [
+            {
+              c: [[1, 'is', '1']],
+              p: ['t1 is 1']
+            },
+            {
+              c: [[1, 'in', '1'], [2, 'in', '2']],
+              p: ['1 in t1', '2 in t2']
+            },
+            {
+              c: [[4, 'is', 'A']],
+              p: ['t4 is A']
+            },
+            {
+              c: [[5, 'in', 'A'], [5, 'in', 'B'], [5, '!in', 'C']],
+              p: ['A, B in t5']
             }
-          }
+          ]
         },
-        {
+        { // 1
           field: 'input',
           type: 'text',
           title: '单行文本',
@@ -32,7 +45,7 @@ export default {
             required: true
           }
         },
-        {
+        { // 2
           field: 'textarea',
           title: '多行文本',
           remark: '吼吼吼吼吼吼吼吼吼吼吼吼吼吼吼吼吼吼吼',
@@ -41,16 +54,20 @@ export default {
             maxLength: 50
           }
         },
-        {
+        { // 3
           field: 'select',
           title: '选择器',
           remark: '提示233',
           items: ['项目1', '项目2', '项目3'],
           rules: {
             required: true
-          }
+          },
+          cond: [
+            [[1, 'is', '1'], [2, 'in', '2']],
+            [[4, 'is', 'A']]
+          ]
         },
-        {
+        { // 4
           field: 'radio',
           title: '单选框组',
           remark: 'hhhhhhhhhhhhhhhhh',
@@ -60,9 +77,9 @@ export default {
             required: true
           }
         },
-        {
+        { // 5
           field: 'checkbox',
-          title: '多选框组',
+          title: '多选',
           remark: '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈',
           items: ['项目1', '项目2', '项目3', '项目4'],
           values: ['A', 'B', 'C', 'D'],

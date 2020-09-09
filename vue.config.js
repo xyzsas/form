@@ -3,5 +3,9 @@ module.exports = {
     'vuetify'
   ],
   publicPath: '',
-  outputDir: 'form'
+  outputDir: 'form',
+  devServer: {
+    compress: true,
+    disableHostCheck: true
+  }
 }
