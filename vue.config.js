@@ -5,7 +5,12 @@ module.exports = {
   publicPath: '',
   outputDir: 'form',
   devServer: {
-    compress: true,
-    disableHostCheck: true
+    proxy: {
+      '/': {
+        target: 'http://sas.yzzx.org',
+        ws: true,
+        changeOrigin: true
+      }
+    }
   }
 }

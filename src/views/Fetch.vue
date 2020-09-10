@@ -5,6 +5,11 @@
 </template>
 
 <script>
+const SS = window.sessionStorage
+const sleep = (timeout) => new Promise((resolve) => {
+  setTimeout(resolve, timeout)
+})
+
 export default {
   data () {
     return {
@@ -13,99 +18,33 @@ export default {
     }
   },
   async mounted () {
-    this.$store.state.form = {
-      main: [
-        {
-          title: '测试问卷 - 首页',
-          queue: [
-            {
-              c: [[1, 'is', '1']],
-              p: ['t1 is 1']
-            },
-            {
-              c: [[1, 'in', '1'], [2, 'in', '2']],
-              p: ['1 in t1', '2 in t2']
-            },
-            {
-              c: [[4, 'is', 'A']],
-              p: ['t4 is A']
-            },
-            {
-              c: [[5, 'in', 'A'], [5, 'in', 'B'], [5, '!in', 'C']],
-              p: ['A, B in t5']
-            }
-          ]
-        },
-        { // 1
-          field: 'input',
-          type: 'text',
-          title: '单行文本',
-          remark: '提示',
-          rules: {
-            required: true
-          }
-        },
-        { // 2
-          field: 'textarea',
-          title: '多行文本',
-          remark: '吼吼吼吼吼吼吼吼吼吼吼吼吼吼吼吼吼吼吼',
-          rules: {
-            required: true,
-            maxLength: 50
-          }
-        },
-        { // 3
-          field: 'select',
-          title: '选择器',
-          remark: '提示233',
-          items: ['项目1', '项目2', '项目3'],
-          rules: {
-            required: true
-          },
-          cond: [
-            [[1, 'is', '1'], [2, 'in', '2']],
-            [[4, 'is', 'A']]
-          ]
-        },
-        { // 4
-          field: 'radio',
-          title: '单选框组',
-          remark: 'hhhhhhhhhhhhhhhhh',
-          items: ['项目1', '项目2', '项目3', '项目4'],
-          values: ['A', 'B', 'C', 'D'],
-          rules: {
-            required: true
-          }
-        },
-        { // 5
-          field: 'checkbox',
-          title: '多选',
-          remark: '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈',
-          items: ['项目1', '项目2', '项目3', '项目4'],
-          values: ['A', 'B', 'C', 'D'],
-          rules: {
-            required: true,
-            minSelect: 2,
-            maxSelect: 3
-          }
-        }
-      ],
-      awa: [
-        {
-          title: 'awa'
-        },
-        {
-          field: 'input',
-          type: 'text',
-          title: '单行文本',
-          remark: '提示',
-          rules: {
-            required: true
-          }
-        }
-      ]
+    if (!SS.token) {
+      this.title = '请先登录'
+      await sleep(1000)
+      window.location.href = '/user/#/?c=/form/%23/fetch/' + this.$route.params.aid
+      return
     }
-    this.$router.push('/form/main')
+    try {
+      const { data } = await this.$ajax({
+        method: 'GET',
+        url: `/form?id=${this.$route.params.aid}`,
+        headers: { token: SS.token }
+      })
+      if (data.record) {
+        this.title = '您已经填写过此表单'
+        await sleep(1000)
+        window.location.href = '/form'
+        return
+      }
+      this.$store.state.aid = this.$route.params.aid
+      this.$store.state.form = JSON.parse(data.form)
+      this.$store.state.ticket = data.ticket
+      this.$router.push('/form/main')
+    } catch (err) {
+      this.title = err.response.data
+      await sleep(1000)
+      this.$router.push('/')
+    }
   }
 }
 </script>

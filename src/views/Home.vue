@@ -19,7 +19,7 @@ export default {
   methods: {
     next () {
       if (!this.input) return
-      this.$router.push(`/${this.input}`)
+      this.$router.push(`/fetch/${this.input}`)
     }
   }
 }

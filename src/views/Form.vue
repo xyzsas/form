@@ -56,7 +56,7 @@
               ></v-radio>
             </v-radio-group>
 
-            <div v-if="i.field === 'checkbox'">
+            <div v-if="i.field === 'combobox'">
               <p v-for="(j, indexJ) in i.values" :key="indexJ" style="margin-bottom: 8px;">
                 {{ j }} {{ i.items[indexJ] }}
               </p>
@@ -75,21 +75,21 @@
         <v-divider style="margin: 8px 0;"></v-divider>
       </v-card>
     </v-form>
-    <v-btn fab color="primary" @click="next">
+    <v-btn fab color="primary" :loading="loading" @click="next">
       <v-icon>mdi-arrow-right</v-icon>
     </v-btn>
   </div>
 </template>
 
 <script>
-// TODO: 题目显示的条件
 export default {
   data () {
     return {
       id: null,
       formData: null,
       title: null,
-      input: []
+      input: [],
+      loading: false
     }
   },
   mounted () {
@@ -124,6 +124,7 @@ export default {
     },
     rule (i, indexI) {
       if (i.rules.required && !this.input[indexI]) return '此项必填'
+      if (!this.input[indexI]) return true
       if (i.rules.minSelect && this.input[indexI].length < i.rules.minSelect) return `最少选择${i.rules.minSelect}项`
       if (i.rules.maxSelect && this.input[indexI].length > i.rules.maxSelect) return `最多选择${i.rules.maxSelect}项`
       if (i.rules.maxLength && this.input[indexI].length > i.rules.maxLength) return `最多${i.rules.maxLength}字符`
@@ -152,7 +153,7 @@ export default {
       }
       return true
     },
-    next () {
+    async next () {
       if (!this.$refs.form.validate()) return
       this.$store.state.data[this.id] = this.input
       const queue = this.formData[0].queue
@@ -162,8 +163,22 @@ export default {
         }
       }
       if (this.$store.state.queue.length === 0) {
-        // submit
-        console.log(this.$store.state.data)
+        // console.log(this.$store.state.data)
+        this.loading = true
+        try {
+          await this.$ajax.post(
+            '/form',
+            this.$store.state.data,
+            {
+              headers: { ticket: this.$store.state.ticket }
+            }
+          )
+          this.$store.state.tip = '表单提交成功'
+          this.$router.push('/finish')
+        } catch (err) {
+          this.$store.state.tip = err.response.data
+          this.$router.push('/finish')
+        }
       } else {
         // console.log(this.$store.state.queue)
         const nxid = this.$store.state.queue.shift()

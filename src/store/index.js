@@ -5,9 +5,12 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    aid: '',
     form: null,
     queue: [],
-    data: {}
+    data: {},
+    ticket: null,
+    tip: ''
   },
   mutations: {
   },
