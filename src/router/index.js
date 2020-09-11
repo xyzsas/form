@@ -9,16 +9,8 @@ const routes = [
     component: () => import('../views/Home.vue')
   },
   {
-    path: '/fetch/:aid',
-    component: () => import('../views/Fetch')
-  },
-  {
-    path: '/form/:fid',
+    path: '/:aid/:fid',
     component: () => import('../views/Form')
-  },
-  {
-    path: '/finish',
-    component: () => import('../views/Finish')
   }
 ]
 

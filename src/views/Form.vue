@@ -1,9 +1,12 @@
 <template>
-  <div class="form">
+  <div class="tip" v-if="tip">
+    <h1>{{ tip }}</h1>
+  </div>
+  <div v-else class="form">
     <h1>{{ title }}</h1>
     <v-form ref="form" style="width: 100%;">
       <v-card style="width: 100%; margin: 30px auto; padding: 30px; max-width: 900px; text-align: left;">
-        <div v-for="(i, indexI) in formData" :key="indexI">
+        <div v-for="(i, indexI) in form" :key="indexI">
           <template v-if="cond(i.cond)">
             <template v-if="indexI">
               <v-divider style="margin: 8px 0;"></v-divider>
@@ -82,18 +85,60 @@
 </template>
 
 <script>
+const SS = window.sessionStorage
+const sleep = (timeout) => new Promise((resolve) => {
+  setTimeout(resolve, timeout)
+})
+
 export default {
   data () {
     return {
-      id: null,
+      tip: '正在获取表单数据',
+
+      aid: null,
+      fid: null,
+
       formData: null,
+      ticket: null,
+      inputData: {},
+      queue: [],
+
       title: null,
-      input: [],
+      form: null,
+      input: null,
       loading: false
     }
   },
-  mounted () {
-    this.init()
+  async mounted () {
+    if (!SS.token) {
+      this.tip = '请先登录'
+      await sleep(1000)
+      window.location.href = '/user/#/?c=/form/%23/' + this.$route.params.aid + '/main'
+      return
+    }
+    try {
+      const { data } = await this.$ajax({
+        method: 'GET',
+        url: `/form?id=${this.$route.params.aid}`,
+        headers: { token: SS.token }
+      })
+      if (data.record) {
+        this.tip = '您已经填写过此表单'
+        await sleep(1000)
+        window.location.href = '/form'
+        return
+      }
+      this.aid = this.$route.params.aid
+      this.formData = JSON.parse(data.form)
+      this.ticket = data.ticket
+      this.tip = ''
+      this.init()
+    } catch (err) {
+      console.log(err)
+      this.tip = err.response.data
+      await sleep(1000)
+      window.location.href = '/form'
+    }
   },
   watch: {
     $route (to, from) {
@@ -115,10 +160,9 @@ export default {
   },
   methods: {
     init () {
-      this.id = this.$route.params.fid
-      if (!this.$store.state.form) this.$router.push('/')
-      this.formData = this.$store.state.form[this.id]
-      this.title = this.formData[0].title
+      this.fid = this.$route.params.fid
+      this.form = this.formData[this.fid]
+      this.title = this.form[0].title
       this.input = []
       this.$refs.form.resetValidation()
     },
@@ -155,34 +199,33 @@ export default {
     },
     async next () {
       if (!this.$refs.form.validate()) return
-      this.$store.state.data[this.id] = this.input
-      const queue = this.formData[0].queue
+      this.inputData[this.fid] = this.input
+      const queue = this.form[0].queue
       for (const s of queue) {
         if (this.judge(s.c)) {
-          this.$store.state.queue.push(...s.p)
+          this.queue.push(...s.p)
         }
       }
-      if (this.$store.state.queue.length === 0) {
-        // console.log(this.$store.state.data)
+      if (this.queue.length === 0) {
         this.loading = true
         try {
           await this.$ajax.post(
             '/form',
-            this.$store.state.data,
+            this.inputData,
             {
-              headers: { ticket: this.$store.state.ticket }
+              headers: { ticket: this.ticket }
             }
           )
-          this.$store.state.tip = '表单提交成功'
-          this.$router.push('/finish')
+          this.tip = '表单提交成功'
+          await sleep(1000)
+          window.location.href = '/form'
         } catch (err) {
-          this.$store.state.tip = err.response.data
-          this.$router.push('/finish')
+          this.tip = err.response.data
+          await sleep(1000)
+          window.location.href = '/form'
         }
       } else {
-        // console.log(this.$store.state.queue)
-        const nxid = this.$store.state.queue.shift()
-        this.$router.push('/form/' + nxid)
+        this.$router.replace(`/${this.aid}/${this.queue.shift()}`)
       }
     }
   }
@@ -190,16 +233,28 @@ export default {
 </script>
 
 <style scoped>
-  div.form {
-    padding: 30px;
-    color: #333;
-    background: #F2F2F2;
-    width: 100%;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-  }
+div.form {
+  padding: 30px;
+  color: #333;
+  background: #F2F2F2;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+div.tip {
+  color: #555;
+  width: 100%;
+  min-height: 100vh;
+  padding: 30px 3%;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
 </style>
