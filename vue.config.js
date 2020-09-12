@@ -1,8 +1,16 @@
 module.exports = {
-  "transpileDependencies": [
-    "vuetify"
+  transpileDependencies: [
+    'vuetify'
   ],
-
   publicPath: '',
-  outputDir: 'form'
+  outputDir: 'form',
+  devServer: {
+    proxy: {
+      '/': {
+        target: 'http://sas.yzzx.org',
+        ws: true,
+        changeOrigin: true
+      }
+    }
+  }
 }
