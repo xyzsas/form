@@ -3,7 +3,7 @@
     <v-card class="form">
       <h1>学生事务系统</h1>
       <h3>表单</h3>
-      <v-text-field ref="input" style="width: 250px;" label="表单事务id" outlined rounded v-model="input" hint="请输入表单事务编号" @keyup.enter="next"></v-text-field>
+      <v-text-field ref="input" style="width: 250px;" label="表单事务id" outlined rounded v-model="input" prefix="FORM" hint="请输入表单事务编号" @keyup.enter="next"></v-text-field>
       <v-btn :disabled="!input" fab color="primary" @click="next">
         <v-icon>mdi-arrow-right</v-icon>
       </v-btn>
@@ -19,7 +19,7 @@ export default {
   methods: {
     next () {
       if (!this.input) return
-      this.$router.push(`/${this.input}/main`)
+      this.$router.push('/form/FORM' + this.input)
     }
   }
 }

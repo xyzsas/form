@@ -1,24 +1,39 @@
 # form
 
-## Project setup
-```
-npm install
+## Affair Properties
+
+- `id`
+- `title`
+- `group`
+- `duration`
+- `form`: JSON string of form
+
+## Form Format
+
+An Array of items:
+```js
+{
+  key: "key", // a unique key for the item
+  field: "field", // type of item
+  rules: ["functionString"], // validate rule
+  hide: "functionString" // hide rule
+}
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
+> In function string, use `this.key` can access value of other items
+
+**Default functions**:
+```js
+const REQUIRED = v => !!v || '必填'
 ```
 
-### Compiles and minifies for production
+### input
+```js
+{
+  key: "key",
+  field: "input",
+  label: "label",
+  rules: ["functionString"],
+  hide: "functionString"
+}
 ```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
