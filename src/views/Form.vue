@@ -2,7 +2,18 @@
   <div class="form">
     <h1>{{ title }}</h1>
     <p v-if="form">填写人： {{ SS.name }}</p>
-    <form-component v-if="form" :form="form" />
+    <form-component v-if="form" :form="form" :record="record" @submit="submit" />
+    <v-dialog v-model="dialog" width="500">
+      <v-card>
+        <v-card-title>学生事务系统</v-card-title>
+        <v-card-text>{{ message }}</v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="dialog = false"   >确认</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -18,7 +29,9 @@ export default {
     title: '正在加载...',
     form: null,
     record: false,
-    ticket: ''
+    ticket: '',
+    dialog: false,
+    message: ''
   }),
   components: {
     FormComponent
@@ -32,7 +45,7 @@ export default {
     }
     this.$ajax.get('/form?id=' + this.aid, { headers: { token: SS.token } })
       .then(resp => {
-        this.record = resp.data.record
+        this.record = JSON.parse(resp.data.record)
         this.title = resp.data.title
         this.form = JSON.parse(resp.data.form)
         this.ticket = resp.data.ticket
@@ -40,6 +53,20 @@ export default {
       .catch(err => {
         this.title = err.response.data
       })
+  },
+  methods: {
+    async submit (data) {
+      try {
+        await this.$ajax.post('/form', data, { headers: { ticket: this.ticket } })
+        this.title = '表单提交成功'
+        this.form = null
+        await new Promise((resolve, reject) => { setTimeout(resolve, 1500) })
+        window.location.href = '/'
+      } catch (err) {
+        this.dialog = true
+        this.message = err.response.data
+      }
+    }
   }
 }
 </script>

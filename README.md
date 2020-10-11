@@ -37,3 +37,15 @@ const REQUIRED = v => !!v || '必填'
   hide: "functionString"
 }
 ```
+
+### select
+```js
+{
+  key: "key",
+  field: "select",
+  label: "label",
+  items: ["item1", "item2", "item3"],
+  rules: ["functionString"],
+  hide: "functionString"
+}
+```

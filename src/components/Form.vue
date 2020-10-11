@@ -1,10 +1,12 @@
 <template>
   <v-card style="width: 90%; max-width: 600px; padding: 5%; min-height: 80vh;">
-    <v-form>
+    <v-form ref="form" style="min-height: 90%;">
       <template v-for="f in list">
         <v-text-field v-if="f.field === 'input'" dense outlined :label="f.label" :key="f.key" v-model="$data[f.key]" :rules="rules(f)"></v-text-field>
+        <v-select v-if="f.field === 'select'" dense outlined :label="f.label" :items="f.items" :key="f.key" v-model="$data[f.key]" :rules="rules(f)"></v-select>
       </template>
     </v-form>
+    <v-btn color="primary" @click="submit">提交</v-btn>
   </v-card>
 </template>
 
@@ -19,7 +21,7 @@ export default {
   data () {
     const res = {}
     for (const f of this.form) {
-      if (f.key) res[f.key] = ''
+      if (f.key) res[f.key] = this.record[f.key] || ''
     }
     return res
   },
@@ -36,6 +38,10 @@ export default {
     rules (f) {
       if (!f.rules || !f.rules.length) return []
       else return f.rules.map(x => eval(x))
+    },
+    submit () {
+      if (!this.$refs.form.validate()) return
+      this.$emit('submit', this.$data)
     }
   }
 }
