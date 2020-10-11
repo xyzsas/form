@@ -11,6 +11,10 @@ const routes = [
   {
     path: '/form/:aid',
     component: () => import('../views/Form')
+  },
+  {
+    path: '/admin',
+    component: () => import('../views/Admin')
   }
 ]
 
